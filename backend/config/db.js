@@ -1,6 +1,9 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
+// Automatically enable SSL for remote cloud hosts (e.g. Railway, Aiven, Render)
+const isRemoteHost = process.env.DB_HOST && process.env.DB_HOST !== 'localhost' && process.env.DB_HOST !== '127.0.0.1';
+
 // Create connection pool using environment variables
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -11,7 +14,8 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  dateStrings: true // Format dates as YYYY-MM-DD strings for clean JSON serialization
+  dateStrings: true, // Format dates as YYYY-MM-DD strings for clean JSON serialization
+  ssl: isRemoteHost ? { rejectUnauthorized: false } : undefined
 });
 
 // Helper function to test database connectivity
