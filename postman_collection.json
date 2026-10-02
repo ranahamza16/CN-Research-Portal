@@ -1,0 +1,456 @@
+{
+  "info": {
+    "_postman_id": "a5e8c142-b883-4a1d-b5f7-9c98ef2e55aa",
+    "name": "Research_Portal_API",
+    "description": "Postman Collection for University Research Opportunity Portal REST API.\nContains the exact sequence required to test and prove full API functionality: Create 3 opportunities, Read All, Read One, Update, Change Status, Delete, Verify 404, and Verify 400 validation.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "id1",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "id2",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "id3",
+      "value": "3",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Create Opportunity 1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Response contains created opportunity object\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.data).to.have.property('id');",
+              "    pm.collectionVariables.set(\"id1\", jsonData.data.id.toString());",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Deep Learning for Medical Image Segmentation\",\n  \"description\": \"Investigation of transformer architectures for multi-organ CT and MRI segmentation on benchmark datasets.\",\n  \"research_area\": \"Artificial Intelligence & Computer Vision\",\n  \"faculty_name\": \"Dr. Tariq Rahim\",\n  \"department\": \"Computer Science\",\n  \"required_skills\": \"Python, PyTorch, OpenCV, Linear Algebra\",\n  \"available_positions\": 2,\n  \"application_deadline\": \"2026-11-15\",\n  \"status\": \"Open\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities"
+          ]
+        },
+        "description": "Creates first research opportunity."
+      }
+    },
+    {
+      "name": "2. Create Opportunity 2",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Response contains created opportunity object\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.data).to.have.property('id');",
+              "    pm.collectionVariables.set(\"id2\", jsonData.data.id.toString());",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Software-Defined Networking for Smart Campus IoT\",\n  \"description\": \"Designing an energy-efficient SDN controller architecture to dynamically balance network traffic across IoT sensor nodes.\",\n  \"research_area\": \"Computer Networks & IoT\",\n  \"faculty_name\": \"Dr. Mohammad Faisal\",\n  \"department\": \"Computer Science\",\n  \"required_skills\": \"Mininet, Ryu SDN Controller, C++, Python, Wireshark\",\n  \"available_positions\": 3,\n  \"application_deadline\": \"2026-11-30\",\n  \"status\": \"Open\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities"
+          ]
+        },
+        "description": "Creates second research opportunity."
+      }
+    },
+    {
+      "name": "3. Create Opportunity 3",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Response contains created opportunity object\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.data).to.have.property('id');",
+              "    pm.collectionVariables.set(\"id3\", jsonData.data.id.toString());",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Automated Smart Contract Vulnerability Detection\",\n  \"description\": \"Developing symbolic execution and static analysis tooling to detect re-entrancy and integer overflow vulnerabilities in Solidity contracts.\",\n  \"research_area\": \"Cyber Security & Blockchain\",\n  \"faculty_name\": \"Dr. Umar Farooq\",\n  \"department\": \"Software Engineering\",\n  \"required_skills\": \"Solidity, Python, AST Parsing, Security Fundamentals\",\n  \"available_positions\": 1,\n  \"application_deadline\": \"2026-10-31\",\n  \"status\": \"Open\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities"
+          ]
+        },
+        "description": "Creates third research opportunity (target for deletion test)."
+      }
+    },
+    {
+      "name": "4. Read All Opportunities",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Returns array of opportunities\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.data).to.be.an('array');",
+              "    pm.expect(jsonData.count).to.be.at.least(3);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities"
+          ]
+        },
+        "description": "Send GET request to retrieve all research opportunities."
+      }
+    },
+    {
+      "name": "5. Read One Opportunity (ID 1)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Returns the requested opportunity object\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.data).to.have.property('title');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities/{{id1}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities",
+            "{{id1}}"
+          ]
+        },
+        "description": "Send GET request for ID 1."
+      }
+    },
+    {
+      "name": "6. Update Opportunity (Title and Skills of ID 1)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Title and skills updated successfully\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.data.title).to.include(\"Advanced Deep Learning\");",
+              "    pm.expect(jsonData.data.required_skills).to.include(\"MONAI\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Advanced Deep Learning for 3D Medical Image Segmentation\",\n  \"required_skills\": \"Python, PyTorch, MONAI, 3D Slicer, CUDA Optimization\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities/{{id1}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities",
+            "{{id1}}"
+          ]
+        },
+        "description": "Send PUT request to update the title and skills of ID 1."
+      }
+    },
+    {
+      "name": "7. Change Status (ID 2 to Closed)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Status updated to Closed\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.data.status).to.eql(\"Closed\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Closed\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities/{{id2}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities",
+            "{{id2}}"
+          ]
+        },
+        "description": "Send PUT request to change the status of ID 2 to Closed."
+      }
+    },
+    {
+      "name": "8. Delete Opportunity (ID 3)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Success message returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.message).to.include(\"deleted successfully\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities/{{id3}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities",
+            "{{id3}}"
+          ]
+        },
+        "description": "Send DELETE request for ID 3."
+      }
+    },
+    {
+      "name": "9. Verify 404 Not Found (Deleted ID 3)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 404 Not Found\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "pm.test(\"Returns 404 error message\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.false;",
+              "    pm.expect(jsonData.message).to.include(\"not found\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities/{{id3}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities",
+            "{{id3}}"
+          ]
+        },
+        "description": "Send GET request for ID 3 (the deleted one) to prove it returns 404 Not Found."
+      }
+    },
+    {
+      "name": "10. Verify 400 Bad Request (Missing Title / Invalid Data)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test(\"Validation error message returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.false;",
+              "    pm.expect(jsonData.message).to.include(\"Validation Error\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"description\": \"Missing title and other required fields\",\n  \"faculty_name\": \"Dr. Tariq Rahim\",\n  \"department\": \"Computer Science\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities"
+          ]
+        },
+        "description": "Send a POST request with missing/invalid data (e.g. missing title) to prove it returns 400 Bad Request."
+      }
+    }
+  ]
+}
