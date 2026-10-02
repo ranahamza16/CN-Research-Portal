@@ -1,0 +1,478 @@
+{
+  "info": {
+    "_postman_id": "c1f78e40-9a21-4f4e-a4b1-8b3d81b952f4",
+    "name": "University Research Opportunity Portal API",
+    "description": "Postman Collection for Computer Networks (CS3014) Assignment 1: University Research Opportunity Portal.\nIncludes full test suite demonstrating CRUD operations, status updates, 404 Not Found error handling, and 400 Bad Request validation.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "createdId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "deleteTargetId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "health"
+          ]
+        },
+        "description": "Checks whether the API server is up and running."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"API status is online\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"online\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Create Opportunity #1 (NLP & Sentiment Analysis)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Multilingual Sentiment Analysis for Low-Resource Languages\",\n  \"description\": \"Developing fine-tuned transformer models for sentiment classification on regional low-resource languages including Urdu and Pashto.\",\n  \"research_area\": \"Natural Language Processing\",\n  \"faculty_name\": \"Dr. Tariq Rahim\",\n  \"department\": \"Computer Science\",\n  \"required_skills\": \"Python, HuggingFace Transformers, PyTorch, Tokenizers\",\n  \"available_positions\": 2,\n  \"application_deadline\": \"2026-11-20\",\n  \"status\": \"Open\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities"
+          ]
+        },
+        "description": "Creates first research opportunity."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Response contains created opportunity object\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.data).to.have.property('id');",
+              "    pm.collectionVariables.set(\"createdId\", jsonData.data.id);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Create Opportunity #2 (SDN & Zero Trust Security)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Zero-Trust Architecture for Software-Defined Enterprise Networks\",\n  \"description\": \"Investigation into micro-segmentation and continuous authentication within OpenFlow-based enterprise networks.\",\n  \"research_area\": \"Computer Networks & Cyber Security\",\n  \"faculty_name\": \"Dr. Mohammad Faisal\",\n  \"department\": \"Computer Science\",\n  \"required_skills\": \"OpenFlow, Mininet, Python, Wireshark, Cryptography\",\n  \"available_positions\": 3,\n  \"application_deadline\": \"2026-12-01\",\n  \"status\": \"Open\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities"
+          ]
+        },
+        "description": "Creates second research opportunity."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Opportunity is Open and has valid fields\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.status).to.eql('Open');",
+              "    pm.expect(jsonData.data.available_positions).to.eql(3);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Create Opportunity #3 (To Be Updated & Deleted)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Temporary Research Opening on Blockchain Consensus\",\n  \"description\": \"Evaluating latency and throughput tradeoffs of Raft vs PBFT in permissioned blockchain ledgers for academic credit transfers.\",\n  \"research_area\": \"Distributed Systems\",\n  \"faculty_name\": \"Dr. Umar Farooq\",\n  \"department\": \"Software Engineering\",\n  \"required_skills\": \"Go, Docker, Distributed Algorithms\",\n  \"available_positions\": 1,\n  \"application_deadline\": \"2026-10-31\",\n  \"status\": \"Open\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities"
+          ]
+        },
+        "description": "Creates third research opportunity, saved as deleteTargetId for later test cases."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set(\"deleteTargetId\", jsonData.data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Retrieve All Research Opportunities",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities"
+          ]
+        },
+        "description": "Fetches all opportunities currently stored in the database."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response is an array of opportunities\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.data).to.be.an('array');",
+              "    pm.expect(jsonData.count).to.be.at.least(3);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Retrieve One Research Opportunity by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities/{{deleteTargetId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities",
+            "{{deleteTargetId}}"
+          ]
+        },
+        "description": "Retrieves complete details of an opportunity using its specific ID."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Retrieved opportunity matches requested ID\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.id).to.eql(parseInt(pm.collectionVariables.get(\"deleteTargetId\")));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Update an Existing Opportunity",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Advanced Blockchain Consensus Mechanisms in Cloud Environments\",\n  \"available_positions\": 4,\n  \"required_skills\": \"Go, Docker, Kubernetes, Distributed Consensus, Cryptography\",\n  \"application_deadline\": \"2026-11-25\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities/{{deleteTargetId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities",
+            "{{deleteTargetId}}"
+          ]
+        },
+        "description": "Updates fields of an existing research opportunity."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Updated fields reflect accurately\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.available_positions).to.eql(4);",
+              "    pm.expect(jsonData.data.title).to.include(\"Advanced Blockchain\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Change Opportunity Status from Open to Closed",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Closed\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities/{{deleteTargetId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities",
+            "{{deleteTargetId}}"
+          ]
+        },
+        "description": "Toggles status of an opportunity from Open to Closed."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Status is successfully updated to Closed\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.status).to.eql(\"Closed\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Delete an Opportunity",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities/{{deleteTargetId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities",
+            "{{deleteTargetId}}"
+          ]
+        },
+        "description": "Deletes an opportunity from the database."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Deletion success message returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.message).to.include(\"deleted successfully\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Request Deleted Opportunity (Demonstrate 404 Not Found)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities/{{deleteTargetId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities",
+            "{{deleteTargetId}}"
+          ]
+        },
+        "description": "Attempts to fetch the deleted opportunity to demonstrate proper 404 Not Found error handling."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 404 Not Found\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "pm.test(\"Returns error object with not found message\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.false;",
+              "    pm.expect(jsonData.message).to.include(\"not found\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Input Validation Failure (Demonstrate 400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Incomplete Posting Without Required Fields\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/opportunities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "opportunities"
+          ]
+        },
+        "description": "Sends request with missing required fields to demonstrate 400 Bad Request validation."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test(\"Validation error message returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.false;",
+              "    pm.expect(jsonData.message).to.include(\"Validation Error\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
