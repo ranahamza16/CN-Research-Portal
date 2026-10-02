@@ -160,11 +160,14 @@
           </div>
 
           <!-- Actions -->
-          <div class="col-12 col-md-2 text-md-end d-flex gap-2 justify-content-end">
+          <div class="col-12 col-md-3 text-md-end d-flex gap-2 justify-content-end">
             <button class="btn btn-outline-secondary" onclick="fetchOpportunities()" title="Refresh List">
               <i class="bi bi-arrow-clockwise"></i>
             </button>
-            <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#opportunityModal" onclick="openCreateModal()">
+            <button class="btn btn-outline-success" onclick="exportToCSV()" title="Export Opportunities to CSV">
+              <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export CSV
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#opportunityModal" onclick="openCreateModal()">
               <i class="bi bi-plus-lg me-1"></i> New
             </button>
           </div>

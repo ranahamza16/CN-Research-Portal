@@ -589,6 +589,40 @@ statusFilter.addEventListener('change', fetchOpportunities);
 deptFilter.addEventListener('change', fetchOpportunities);
 
 // ---------------------------------------------------------------------
+// Export Opportunities to CSV File
+// ---------------------------------------------------------------------
+function exportToCSV() {
+  if (!opportunities || opportunities.length === 0) {
+    showFeedbackAlert('No opportunities available to export.', 'warning');
+    return;
+  }
+
+  const headers = ['id', 'title', 'description', 'research_area', 'faculty_name', 'department', 'required_skills', 'available_positions', 'application_deadline', 'status', 'created_at', 'updated_at'];
+  
+  const csvRows = [];
+  csvRows.push(headers.join(','));
+
+  opportunities.forEach(opp => {
+    const row = headers.map(header => {
+      const val = opp[header] !== undefined && opp[header] !== null ? String(opp[header]) : '';
+      const escaped = val.replace(/"/g, '""');
+      return `"${escaped}"`;
+    });
+    csvRows.push(row.join(','));
+  });
+
+  const csvBlob = new Blob([csvRows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(csvBlob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'opportunities.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showFeedbackAlert('opportunities.csv exported and downloaded successfully!', 'success');
+}
+
+// ---------------------------------------------------------------------
 // HTML Escaping Utility for XSS Prevention
 // ---------------------------------------------------------------------
 function escapeHtml(str) {
