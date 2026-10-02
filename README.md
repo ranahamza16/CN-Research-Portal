@@ -17,7 +17,7 @@ Developed for **Computer Networks (CS3014) - Assignment #01** at **National Univ
 * **Class & Section:** BS (CS 5C)
 * **Semester:** Fall 2026
 * **Course:** Computer Networks (CS3014)
-* **GitHub Repository:** [https://github.com/hamzarana/research-opportunity-portal](https://github.com/hamzarana/research-opportunity-portal)
+* **GitHub Repository:** [https://github.com/ranahamza16/CN-Research-Portal](https://github.com/ranahamza16/CN-Research-Portal)
 * **Video Demonstration:** [Link to 1-Minute Demonstration Video](https://youtu.be/placeholder-demo-video)
 
 ---
@@ -89,8 +89,8 @@ Ensure you have the following installed on your machine:
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/hamzarana/research-opportunity-portal.git
-cd research-opportunity-portal
+git clone https://github.com/ranahamza16/CN-Research-Portal.git
+cd CN-Research-Portal
 ```
 
 ### 3. Install Dependencies
