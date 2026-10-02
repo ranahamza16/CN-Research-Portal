@@ -9,7 +9,7 @@ async function initializeDatabase() {
   const dbHost = process.env.DB_HOST || 'localhost';
   const dbPort = parseInt(process.env.DB_PORT, 10) || 3306;
   const dbUser = process.env.DB_USER || 'root';
-  const dbPassword = process.env.DB_PASSWORD || '';
+  const dbPassword = process.env.DB_PASS !== undefined ? process.env.DB_PASS : (process.env.DB_PASSWORD || '');
   const dbName = process.env.DB_NAME || 'research_portal';
 
   console.log('Connecting to MySQL server...');

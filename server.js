@@ -49,8 +49,7 @@ app.use((err, req, res, next) => {
   console.error('Unhandled Application Error:', err);
   res.status(500).json({
     success: false,
-    message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    message: 'Internal Server Error'
   });
 });
 
