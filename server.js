@@ -16,8 +16,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
+const fs = require('fs');
+
+// Resolve frontend static assets path dynamically
+const frontendPath = fs.existsSync(path.join(__dirname, '../frontend'))
+  ? path.join(__dirname, '../frontend')
+  : (fs.existsSync(path.join(__dirname, 'frontend'))
+      ? path.join(__dirname, 'frontend')
+      : path.join(__dirname, 'public'));
+
 // Serve frontend static files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(frontendPath));
 
 // API Health Check
 app.get('/api/health', (req, res) => {
@@ -41,7 +50,7 @@ app.all('/api/*', (req, res) => {
 
 // For any non-API route, serve index.html (SPA support)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // Centralized Error Handling Middleware (500)

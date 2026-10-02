@@ -1,0 +1,30 @@
+{
+  "name": "university-research-opportunity-portal",
+  "version": "1.0.0",
+  "description": "University Research Opportunity Portal - CS3014 Computer Networks Assignment 1",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "init-db": "node scripts/init-db.js"
+  },
+  "keywords": [
+    "research-portal",
+    "express",
+    "mysql",
+    "rest-api",
+    "bootstrap5"
+  ],
+  "author": "Hamza Rana (24P-0587)",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
