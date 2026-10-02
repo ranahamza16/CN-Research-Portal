@@ -112,15 +112,24 @@ DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=
+DB_PASS=
 DB_NAME=research_portal
 ```
 
 ### 5. Initialize the Database
-Run the automated initialization script to provision the database and table:
+You can initialize the database using either of the following methods:
+
+**Method A: Automated Script (Recommended)**
 ```bash
 npm run init-db
 ```
-*(Optional)* To populate sample data, run:
+
+**Method B: Direct MySQL CLI Import**
+```bash
+mysql -u root -p < database_setup.sql
+```
+
+*(Optional)* To populate additional sample records:
 ```bash
 mysql -u root -p research_portal < database/seed.sql
 ```
