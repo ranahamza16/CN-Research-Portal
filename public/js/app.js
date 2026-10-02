@@ -1,6 +1,8 @@
 /**
  * University Research Opportunity Portal - Client Frontend JavaScript
  * Integrates directly with the Express REST API backend.
+ * Features: Complete CRUD operations, real-time filtering, client-side validation,
+ * Bootstrap alerts for user feedback, and modal controllers.
  */
 
 const API_BASE = '/api/opportunities';
@@ -17,6 +19,7 @@ const emptyState = document.getElementById('emptyState');
 const searchInput = document.getElementById('searchInput');
 const statusFilter = document.getElementById('statusFilter');
 const deptFilter = document.getElementById('deptFilter');
+const alertFeedbackContainer = document.getElementById('alertFeedbackContainer');
 
 // Metrics elements
 const statTotal = document.getElementById('statTotal');
@@ -64,8 +67,29 @@ const toastMessage = document.getElementById('toastMessage');
 const toastIcon = document.getElementById('toastIcon');
 
 // ---------------------------------------------------------------------
-// Notification Toast Helper
+// Feedback UI: Bootstrap Alerts & Toast Notifications
 // ---------------------------------------------------------------------
+function showFeedbackAlert(message, type = 'success') {
+  const isDanger = type === 'danger' || type === 'error';
+  const alertType = isDanger ? 'danger' : (type === 'warning' ? 'warning' : 'success');
+  const iconClass = alertType === 'success' 
+    ? 'bi-check-circle-fill' 
+    : (alertType === 'danger' ? 'bi-exclamation-triangle-fill' : 'bi-exclamation-circle-fill');
+
+  if (alertFeedbackContainer) {
+    alertFeedbackContainer.innerHTML = `
+      <div class="alert alert-${alertType} alert-dismissible fade show shadow-sm d-flex align-items-center gap-2" role="alert">
+        <i class="bi ${iconClass} fs-5 flex-shrink-0"></i>
+        <div class="flex-grow-1">${escapeHtml(message)}</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    `;
+    alertFeedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  showToast(message, alertType);
+}
+
 function showToast(message, type = 'success') {
   liveToastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
   toastIcon.className = '';
@@ -89,7 +113,7 @@ function showToast(message, type = 'success') {
 }
 
 // ---------------------------------------------------------------------
-// Fetch & Display All Opportunities
+// 3.1 Fetch & Display All Opportunities (Dashboard / List View)
 // ---------------------------------------------------------------------
 async function fetchOpportunities() {
   loadingIndicator.classList.remove('d-none');
@@ -114,7 +138,7 @@ async function fetchOpportunities() {
     renderOpportunities(opportunities);
   } catch (error) {
     console.error('Error fetching opportunities:', error);
-    showToast(error.message, 'danger');
+    showFeedbackAlert('Failed to load opportunities: ' + error.message, 'danger');
   } finally {
     loadingIndicator.classList.add('d-none');
   }
@@ -136,7 +160,7 @@ function updateMetrics() {
 }
 
 // ---------------------------------------------------------------------
-// Render Opportunities Cards
+// Render Opportunities Cards with "View Details", "Edit", and "Delete"
 // ---------------------------------------------------------------------
 function renderOpportunities(items) {
   opportunitiesContainer.innerHTML = '';
@@ -155,7 +179,6 @@ function renderOpportunities(items) {
       ? deadlineObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
       : opp.application_deadline;
 
-    // Split skills by comma
     const skillsList = opp.required_skills
       ? opp.required_skills.split(',').map(s => s.trim()).filter(Boolean)
       : [];
@@ -177,11 +200,11 @@ function renderOpportunities(items) {
         </div>
 
         <!-- Research Title -->
-        <h5 class="fw-bold text-dark mb-1 title-truncate" title="${escapeHtml(opp.title)}">
+        <h5 class="fw-bold text-dark mb-1" title="${escapeHtml(opp.title)}">
           ${escapeHtml(opp.title)}
         </h5>
 
-        <!-- Area & Dept -->
+        <!-- Area -->
         <div class="text-primary small fw-semibold mb-2">
           <i class="bi bi-tag-fill me-1"></i>${escapeHtml(opp.research_area)}
         </div>
@@ -209,20 +232,20 @@ function renderOpportunities(items) {
           <span>Deadline: <strong>${formattedDeadline}</strong></span>
         </div>
 
-        <!-- Actions -->
-        <div class="d-flex justify-content-between align-items-center pt-1">
+        <!-- Actions: View Details, Edit, Status Toggle, Delete -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-1">
           <button class="btn btn-sm btn-outline-primary" onclick="viewOpportunityDetails(${opp.id})">
-            <i class="bi bi-eye me-1"></i> Details
+            <i class="bi bi-eye me-1"></i> View Details
           </button>
           
-          <div class="btn-group btn-group-sm">
-            <button class="btn btn-outline-secondary" onclick="openEditModal(${opp.id})" title="Edit Opportunity">
-              <i class="bi bi-pencil"></i>
+          <div class="d-flex align-items-center gap-1">
+            <button class="btn btn-sm btn-outline-secondary" onclick="openEditModal(${opp.id})" title="Edit Opportunity">
+              <i class="bi bi-pencil me-1"></i> Edit
             </button>
-            <button class="btn ${isClosed ? 'btn-outline-success' : 'btn-outline-warning'}" onclick="toggleStatus(${opp.id}, '${opp.status}')" title="${isClosed ? 'Mark as Open' : 'Mark as Closed'}">
-              <i class="bi ${isClosed ? 'bi-check-lg' : 'bi-x-lg'}"></i>
+            <button class="btn btn-sm ${isClosed ? 'btn-outline-success' : 'btn-outline-warning'}" onclick="toggleStatus(${opp.id}, '${opp.status}')" title="${isClosed ? 'Change to Open' : 'Change to Closed'}">
+              <i class="bi ${isClosed ? 'bi-unlock' : 'bi-lock'}"></i> ${isClosed ? 'Open' : 'Close'}
             </button>
-            <button class="btn btn-outline-danger" onclick="promptDelete(${opp.id}, '${escapeHtml(opp.title)}')" title="Delete Opportunity">
+            <button class="btn btn-sm btn-outline-danger" onclick="promptDelete(${opp.id}, '${escapeHtml(opp.title)}')" title="Delete Opportunity">
               <i class="bi bi-trash"></i>
             </button>
           </div>
@@ -236,7 +259,7 @@ function renderOpportunities(items) {
 }
 
 // ---------------------------------------------------------------------
-// View Opportunity Details (GET /api/opportunities/:id)
+// 3.1 Details View: Modal displaying complete details
 // ---------------------------------------------------------------------
 async function viewOpportunityDetails(id) {
   try {
@@ -260,13 +283,16 @@ async function viewOpportunityDetails(id) {
     const isClosed = opp.status === 'Closed';
 
     viewDetailsBody.innerHTML = `
-      <div class="mb-3">
-        <span class="badge ${isClosed ? 'bg-secondary' : 'bg-success'} fs-6 px-3 py-2 rounded-pill me-2">
-          ${opp.status}
-        </span>
-        <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-6 px-3 py-2 rounded-pill">
-          ${opp.available_positions} Available Positions
-        </span>
+      <div class="mb-3 d-flex align-items-center justify-content-between">
+        <div>
+          <span class="badge ${isClosed ? 'bg-secondary' : 'bg-success'} fs-6 px-3 py-2 rounded-pill me-2">
+            ${opp.status}
+          </span>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-6 px-3 py-2 rounded-pill">
+            ${opp.available_positions} Available Positions
+          </span>
+        </div>
+        <span class="text-muted small">Database ID: #${opp.id}</span>
       </div>
 
       <h4 class="fw-bold text-dark mb-2">${escapeHtml(opp.title)}</h4>
@@ -288,8 +314,8 @@ async function viewOpportunityDetails(id) {
           <strong>${deadlineFormatted}</strong>
         </div>
         <div class="col-sm-6">
-          <small class="text-muted d-block">Database Record ID</small>
-          <strong>#${opp.id}</strong>
+          <small class="text-muted d-block">Current Status</small>
+          <strong class="${isClosed ? 'text-secondary' : 'text-success'}">${opp.status}</strong>
         </div>
       </div>
 
@@ -318,12 +344,12 @@ async function viewOpportunityDetails(id) {
 
     viewDetailsModal.show();
   } catch (error) {
-    showToast(error.message, 'danger');
+    showFeedbackAlert(error.message, 'danger');
   }
 }
 
 // ---------------------------------------------------------------------
-// Open Create Modal
+// 3.1 Create Form: Initializer with min future date constraint
 // ---------------------------------------------------------------------
 function openCreateModal() {
   opportunityForm.reset();
@@ -332,10 +358,15 @@ function openCreateModal() {
   modalAlert.classList.add('d-none');
   modalTitle.innerHTML = '<i class="bi bi-plus-circle text-primary me-2"></i>Post New Research Opportunity';
   btnSubmitText.textContent = 'Create Opportunity';
+
+  // Client-side validation: Set min deadline to tomorrow
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  formDeadline.min = tomorrow.toISOString().split('T')[0];
 }
 
 // ---------------------------------------------------------------------
-// Open Edit Modal (GET /api/opportunities/:id)
+// 3.1 Update/Status Form: Pre-filled with existing data & status dropdown
 // ---------------------------------------------------------------------
 async function openEditModal(id) {
   try {
@@ -357,8 +388,9 @@ async function openEditModal(id) {
     formDepartment.value = opp.department;
     formFaculty.value = opp.faculty_name;
     formPositions.value = opp.available_positions;
-    formStatus.value = opp.status;
+    formStatus.value = opp.status; // Open or Closed dropdown
     formDeadline.value = opp.application_deadline; // YYYY-MM-DD
+    formDeadline.removeAttribute('min');
     formSkills.value = opp.required_skills;
     formDescription.value = opp.description;
 
@@ -367,36 +399,79 @@ async function openEditModal(id) {
 
     opportunityModal.show();
   } catch (error) {
-    showToast(error.message, 'danger');
+    showFeedbackAlert(error.message, 'danger');
   }
 }
 
 // ---------------------------------------------------------------------
-// Form Submission (POST create or PUT update)
+// Form Submission & Client-Side Validation
 // ---------------------------------------------------------------------
 opportunityForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   modalAlert.classList.add('d-none');
 
-  if (!opportunityForm.checkValidity()) {
-    e.stopPropagation();
-    opportunityForm.classList.add('was-validated');
-    return;
-  }
-
+  const titleVal = formTitle.value.trim();
+  const descVal = formDescription.value.trim();
+  const areaVal = formArea.value.trim();
+  const facVal = formFaculty.value.trim();
+  const deptVal = formDepartment.value.trim();
+  const skillsVal = formSkills.value.trim();
+  const positionsVal = parseInt(formPositions.value, 10);
+  const deadlineVal = formDeadline.value;
+  const statusVal = formStatus.value;
   const id = opportunityIdInput.value;
   const isEditing = Boolean(id);
 
+  // Client-side Validation 1: Required fields cannot be empty
+  if (!titleVal || !descVal || !areaVal || !facVal || !deptVal || !skillsVal) {
+    opportunityForm.classList.add('was-validated');
+    modalAlert.textContent = 'Validation Error: Required fields cannot be empty.';
+    modalAlert.classList.remove('d-none');
+    return;
+  }
+
+  // Client-side Validation 2: Available positions must be > 0
+  if (isNaN(positionsVal) || positionsVal <= 0) {
+    opportunityForm.classList.add('was-validated');
+    modalAlert.textContent = 'Validation Error: Available positions must be greater than 0.';
+    modalAlert.classList.remove('d-none');
+    formPositions.focus();
+    return;
+  }
+
+  // Client-side Validation 3: Deadline must be provided and must be a future date when creating
+  if (!deadlineVal) {
+    opportunityForm.classList.add('was-validated');
+    modalAlert.textContent = 'Validation Error: Please select an application deadline.';
+    modalAlert.classList.remove('d-none');
+    formDeadline.focus();
+    return;
+  }
+
+  if (!isEditing) {
+    const selectedDeadline = new Date(deadlineVal + 'T00:00:00');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDeadline <= today) {
+      opportunityForm.classList.add('was-validated');
+      modalAlert.textContent = 'Validation Error: Application deadline must be a future date.';
+      modalAlert.classList.remove('d-none');
+      formDeadline.focus();
+      return;
+    }
+  }
+
   const payload = {
-    title: formTitle.value.trim(),
-    description: formDescription.value.trim(),
-    research_area: formArea.value.trim(),
-    faculty_name: formFaculty.value.trim(),
-    department: formDepartment.value.trim(),
-    required_skills: formSkills.value.trim(),
-    available_positions: parseInt(formPositions.value, 10),
-    application_deadline: formDeadline.value,
-    status: formStatus.value
+    title: titleVal,
+    description: descVal,
+    research_area: areaVal,
+    faculty_name: facVal,
+    department: deptVal,
+    required_skills: skillsVal,
+    available_positions: positionsVal,
+    application_deadline: deadlineVal,
+    status: statusVal
   };
 
   btnSubmitSpinner.classList.remove('d-none');
@@ -417,11 +492,11 @@ opportunityForm.addEventListener('submit', async (e) => {
     const result = await response.json();
 
     if (!response.ok || !result.success) {
-      throw new Error(result.message || 'Operation failed');
+      throw new Error(result.message || (isEditing ? 'Failed to update opportunity' : 'Failed to create opportunity'));
     }
 
     opportunityModal.hide();
-    showToast(isEditing ? 'Opportunity updated successfully!' : 'New research opportunity published!');
+    showFeedbackAlert(isEditing ? 'Opportunity updated successfully!' : 'Opportunity created successfully!', 'success');
     await fetchOpportunities();
   } catch (error) {
     console.error('Save error:', error);
@@ -434,7 +509,7 @@ opportunityForm.addEventListener('submit', async (e) => {
 });
 
 // ---------------------------------------------------------------------
-// Quick Status Toggle (Open <-> Closed) (PUT /api/opportunities/:id)
+// Toggle Status between Open and Closed
 // ---------------------------------------------------------------------
 async function toggleStatus(id, currentStatus) {
   const newStatus = currentStatus === 'Open' ? 'Closed' : 'Open';
@@ -450,18 +525,18 @@ async function toggleStatus(id, currentStatus) {
     const result = await response.json();
 
     if (!response.ok || !result.success) {
-      throw new Error(result.message || 'Failed to toggle status');
+      throw new Error(result.message || 'Failed to update status');
     }
 
-    showToast(`Opportunity #${id} marked as ${newStatus}!`);
+    showFeedbackAlert(`Opportunity #${id} status changed to ${newStatus}!`, 'success');
     await fetchOpportunities();
   } catch (error) {
-    showToast(error.message, 'danger');
+    showFeedbackAlert('Failed to update status: ' + error.message, 'danger');
   }
 }
 
 // ---------------------------------------------------------------------
-// Delete Opportunity Prompt & Confirmation (DELETE /api/opportunities/:id)
+// Delete Opportunity Confirmation Modal & Execution
 // ---------------------------------------------------------------------
 function promptDelete(id, title) {
   deleteTargetId = id;
@@ -484,15 +559,15 @@ btnConfirmDelete.addEventListener('click', async () => {
     const result = await response.json();
 
     if (!response.ok || !result.success) {
-      throw new Error(result.message || 'Failed to delete opportunity');
+      throw new Error(result.message || 'Failed to delete');
     }
 
     deleteConfirmModal.hide();
-    showToast(`Opportunity #${deleteTargetId} deleted permanently.`);
+    showFeedbackAlert(`Opportunity #${deleteTargetId} deleted successfully!`, 'success');
     deleteTargetId = null;
     await fetchOpportunities();
   } catch (error) {
-    showToast(error.message, 'danger');
+    showFeedbackAlert('Failed to delete: ' + error.message, 'danger');
   } finally {
     btnDeleteSpinner.classList.add('d-none');
     btnConfirmDelete.disabled = false;
